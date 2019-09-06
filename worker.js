@@ -6,6 +6,6 @@ process.on("message", function(msg) {
     while (true) {};
     console.log('IMPOSSIBLE');
   } else {
-    process.send('ok');
-  }
+      process.send('ok');
+    }
 });
