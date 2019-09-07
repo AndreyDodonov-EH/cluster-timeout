@@ -1,15 +1,7 @@
-const { InitWithWorkerFunction, Exec } = require('./functionExecutor');
+const { InitWithWorkerFile, Exec } = require('./fileExecutor/fileExecutor');
 
-function exampleFunction(reqMsg) {
-  if (reqMsg === 1) {
-    while (true);
-  } else {
-    const resMsg = {data: 'ok'};
-    return resMsg;
-  }
-}
 
-InitWithWorkerFunction(exampleFunction);
+InitWithWorkerFile('./exampleWorkerFile.js');
 
 runIt([1, 1, 0, 0, 1])
     .then(() => {

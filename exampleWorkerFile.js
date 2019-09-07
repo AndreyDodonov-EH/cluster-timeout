@@ -5,4 +5,4 @@ process.on("message", function (reqMsg) {
     const resMsg = {data: 'ok'};
     process.send(resMsg);
   }
-}
+});

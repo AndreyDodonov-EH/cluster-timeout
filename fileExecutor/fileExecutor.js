@@ -8,7 +8,7 @@ let _defaultTimeout = 100;
 
 /**
  *
- * @param {string} pathToWorkerFile Path (RELATIVE TO EXECUTOR MODULE!) to the file containing worker code to be executed with timeout.
+ * @param {string} pathToWorkerFile Path to the file containing worker code to be executed with timeout.
  * @param defaultTimeout Default timeout after which the worker will be killed, if it does not send any message before that.
  * @constructor
  */
@@ -21,7 +21,7 @@ module.exports.InitWithWorkerFile = function Init(pathToWorkerFile, defaultTimeo
   }
 
   cluster.setupMaster({
-    exec: pathToWorkerFile, // ToDo consider to make path relative to a caller, if it is possible
+    exec: pathToWorkerFile,
     silent: false
   });
 }
