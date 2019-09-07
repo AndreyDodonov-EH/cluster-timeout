@@ -13,8 +13,7 @@ let _defaultTimeout = 100;
  * @constructor
  */
 module.exports.InitWithWorkerFile = function Init(pathToWorkerFile, defaultTimeout = undefined) {
-  // ToDo implement same but with function as an argument and put worker here
-  if (_defaultTimeout) {
+  if (defaultTimeout) {
     _defaultTimeout = defaultTimeout;
   }
   if (!fs.existsSync(pathToWorkerFile)) {
