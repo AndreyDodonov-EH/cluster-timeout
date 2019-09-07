@@ -1,6 +1,6 @@
-const {Init, Exec} = require('./executor');
+const { InitWithWorkerFile, Exec } = require('./fileExecutor');
 
-Init('./worker.js');
+InitWithWorkerFile('./exampleWorkerFile.js');
 
 runIt([1, 1, 0, 0, 1])
     .then(() => {

@@ -1,4 +1,5 @@
 const cluster = require('cluster');
+
 const fs = require("fs");
 
 let _worker;
@@ -7,11 +8,12 @@ let _defaultTimeout = 100;
 
 /**
  *
- * @param {string} pathToWorkerFile Path (RELATIVE TO EXECUTOR MODULE!) to the file containing worker code to be executed.
+ * @param {string} pathToWorkerFile Path (RELATIVE TO EXECUTOR MODULE!) to the file containing worker code to be executed with timeout.
  * @param defaultTimeout Default timeout after which the worker will be killed, if it does not send any message before that.
  * @constructor
  */
-module.exports.Init = function Init(pathToWorkerFile, defaultTimeout = undefined) {
+module.exports.InitWithWorkerFile = function Init(pathToWorkerFile, defaultTimeout = undefined) {
+  // ToDo implement same but with function as an argument and put worker here
   if (_defaultTimeout) {
     _defaultTimeout = defaultTimeout;
   }
