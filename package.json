@@ -11,6 +11,7 @@
   "author": "",
   "license": "ISC",
   "dependencies": {
+    "clone": "^2.1.2",
     "cluster": "^0.7.7"
   }
 }

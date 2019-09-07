@@ -1,6 +1,6 @@
 const {Init, Exec} = require('./executor');
 
-Init();
+Init('./worker.js');
 
 runIt([1, 1, 0, 0, 1])
     .then(() => {
@@ -10,13 +10,13 @@ runIt([1, 1, 0, 0, 1])
 
 
 async function runIt(msgs) {
-  for (const msg of msgs) {
+  for (const reqMsg of msgs) {
     try {
-      console.log(msg);
-      const res = await Exec(msg);
-      console.log('SUCCESS ' + res);
+      console.log(reqMsg);
+      const res = await Exec(reqMsg);
+      console.log(res.data);
     } catch (e) {
-      console.log('ERROR ' + e);
+      console.log(e.error);
     }
   }
 }

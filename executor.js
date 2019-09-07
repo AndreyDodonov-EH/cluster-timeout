@@ -1,73 +1,69 @@
 const cluster = require('cluster');
+const fs = require("fs");
 
-let worker;
-let timer = {};
+let _worker;
+let _timer = {};
+let _defaultTimeout = 100;
 
-module.exports.Init = function Init() {
+/**
+ *
+ * @param {string} pathToWorkerFile Path (RELATIVE TO EXECUTOR MODULE!) to the file containing worker code to be executed.
+ * @param defaultTimeout Default timeout after which the worker will be killed, if it does not send any message before that.
+ * @constructor
+ */
+module.exports.Init = function Init(pathToWorkerFile, defaultTimeout = undefined) {
+  if (_defaultTimeout) {
+    _defaultTimeout = defaultTimeout;
+  }
+  if (!fs.existsSync(pathToWorkerFile)) {
+    throw new Error('Worker file not found at ' + pathToWorkerFile);
+  }
+
   cluster.setupMaster({
-    exec: "./worker.js",
+    exec: pathToWorkerFile, // ToDo consider to make path relative to a caller, if it is possible
     silent: false
   });
 }
 
-module.exports.Exec = function Exec(msg) {
+module.exports.Exec = function Exec(reqMsg, timeout = undefined) {
   return new Promise((resolve, reject) => {
     let nmbOfWorkers = Object.keys(cluster.workers).length;
     if (0 == nmbOfWorkers) {
       goOnline()
           .then(() => {
-            timeout()
-                .catch(() => {
-                  reject('timeout');
-                })
-            worker.send(msg);
-            calc()
-                .then((data) => {
-                  resolve(data);
-                })
+            execWithTimeout(reqMsg, resolve, reject, timeout);
           })
           .catch(() => {
-            reject('unknown')
+            const resMsg = {error: 'worker failed to go online' };
+            reject(resMsg);
           })
     } else {
-      timeout()
-          .catch(() => {
-            reject('timeout');
-          })
-      worker.send(msg);
-      calc()
-          .then((data) => {
-            resolve(data);
-          })
+      execWithTimeout(reqMsg, resolve, reject, timeout);
     }
-  });
-}
-
-function calc() {
-  return new Promise((resolve) => {
-    worker.on("message", function (msgFromWorker) {
-      clearTimeout(timer);
-      resolve(msgFromWorker);
-    });
   });
 }
 
 function goOnline() {
   return new Promise((resolve) => {
-    worker = cluster.fork();
-    worker.on('online', () => {
+    _worker = cluster.fork();
+    _worker.on('online', () => {
       resolve();
     });
   });
 }
 
-function timeout() {
-  return new Promise((resolve, reject) => {
-    timer = setTimeout(() => {
-      worker.process.kill();
-      worker.on('exit', () => {
-        reject('timeout');
+function execWithTimeout(reqMsg, resolve, reject, timeout) {
+    const timeoutToUse = timeout ? timeout : _defaultTimeout;
+    _worker.on("message", (resMsg) => {
+      clearTimeout(_timer);
+      resolve(resMsg);
+    });
+    _worker.send(reqMsg);
+    // kill in case of timeout
+    _timer = setTimeout(() => {
+      _worker.process.kill();
+      _worker.on('exit', () => {
+        reject({error: 'timeout'});
       });
-    }, 100);
-  });
+    }, timeoutToUse);
 }
