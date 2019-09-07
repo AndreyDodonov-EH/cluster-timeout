@@ -1,8 +1,12 @@
-process.on("message", function (reqMsg) {
+process.on("message", (reqMsg) => {
+  const resMsg = dangerousFunction(reqMsg);
+  process.send(resMsg);
+});
+
+function dangerousFunction(reqMsg) {
   if (reqMsg === 1) {
     while (true);
   } else {
-    const resMsg = {data: 'ok'};
-    process.send(resMsg);
+    return  {data: 'ok'};
   }
-});
+}
